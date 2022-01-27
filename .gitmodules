@@ -1,0 +1,3 @@
+[submodule "SATySFi"]
+	path = SATySFi
+	url = git@github.com:gfngfn/SATySFi.git
