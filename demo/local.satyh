@@ -1,0 +1,12 @@
+@import: ../src/clsor
+
+module Local = struct
+
+  module MyClsSettings = struct
+    val config =  Clsor.default ()
+                  |> Clsor.font-size 20pt
+  end
+
+  module MyCls = Clsor.Make MyClsSettings
+
+end

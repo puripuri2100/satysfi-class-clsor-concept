@@ -1,0 +1,6 @@
+@import: ../src/clsor
+@import: local
+
+Local.MyCls.document '<+Local.MyCls.p{テスト}>
+
+

@@ -1,0 +1,97 @@
+@require: annot
+@require: math
+@require: list
+@require: pervasives
+
+
+
+module Clsor% :> sig
+
+%  type config
+
+%end
+= struct
+
+  type config =
+    (|
+      font-size : length,
+    |)
+
+  val default () =
+    (|
+      font-size = 12pt,
+    |)
+
+  val font-size size config =
+    (|
+      config
+      with
+      font-size = size
+    |)
+
+
+  signature S = sig
+    val config : config
+  end
+
+
+
+
+  module Make = fun(X : S) -> struct
+
+  val config-data = X.config
+
+  val page-width = 210mm
+  val page-height = 297mm
+  val top-space = 25mm
+  val bottom-space = 25mm
+  val left-space = 25mm
+  val right-space = 25mm
+  val text-width = page-width -' left-space -' right-space
+
+  val make-ctx width =
+    get-initial-context width (command \Math.math)
+      |> set-font-size config-data#font-size
+      |> set-dominant-wide-script Kana
+      |> set-language Kana Japanese
+      |> set-language HanIdeographic Japanese
+      |> set-dominant-narrow-script Latin
+      |> set-language Latin English
+
+
+    val document bt =
+      let ctx = make-ctx text-width in
+      let page = UserDefinedPaper(page-width, page-height) in
+      % コンテンツを表示させる部分の指定
+      let pagecontf pbinfo =
+        (|
+          text-height = page-height -' (top-space +' bottom-space),
+          text-origin = (left-space, top-space),
+        |)
+      in
+      % ヘッダーとフッター
+      let pagepartsf pbinfo =
+        let page-num = embed-string (arabic pbinfo#page-number) in
+        let ctx = set-paragraph-margin 0pt 0pt ctx in
+        let header = block-nil in
+        let header-origin = (left-space, 0pt) in
+        let footer = block-nil in
+        let footer-origin = (left-space, page-height -' bottom-space) in
+        (|
+          header-content = header,
+          header-origin = header-origin,
+          footer-content = footer,
+          footer-origin = footer-origin,
+        |)
+      in
+      let bb = read-block ctx bt in
+        page-break page pagecontf pagepartsf bb
+
+    val block ctx +p it =
+      let ib = read-inline ctx it in
+      line-break true true ctx (ib ++ inline-fil)
+
+  end
+
+
+end
