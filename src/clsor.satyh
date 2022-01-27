@@ -8,7 +8,10 @@
 module Clsor% :> sig
 
 %  type config
-
+%  val default : unit -> config
+%  val font-size : length -> config -> config
+%
+%
 %end
 = struct
 
@@ -39,24 +42,24 @@ module Clsor% :> sig
 
   module Make = fun(X : S) -> struct
 
-  val config-data = X.config
+    val config-data = X.config
 
-  val page-width = 210mm
-  val page-height = 297mm
-  val top-space = 25mm
-  val bottom-space = 25mm
-  val left-space = 25mm
-  val right-space = 25mm
-  val text-width = page-width -' left-space -' right-space
+    val page-width = 210mm
+    val page-height = 297mm
+    val top-space = 25mm
+    val bottom-space = 25mm
+    val left-space = 25mm
+    val right-space = 25mm
+    val text-width = page-width -' left-space -' right-space
 
-  val make-ctx width =
-    get-initial-context width (command \Math.math)
-      |> set-font-size config-data#font-size
-      |> set-dominant-wide-script Kana
-      |> set-language Kana Japanese
-      |> set-language HanIdeographic Japanese
-      |> set-dominant-narrow-script Latin
-      |> set-language Latin English
+    val make-ctx width =
+      get-initial-context width (command \Math.math)
+        |> set-font-size config-data#font-size
+        |> set-dominant-wide-script Kana
+        |> set-language Kana Japanese
+        |> set-language HanIdeographic Japanese
+        |> set-dominant-narrow-script Latin
+        |> set-language Latin English
 
 
     val document bt =
