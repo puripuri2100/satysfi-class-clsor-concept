@@ -1,6 +1,11 @@
 @import: ../src/clsor
 @import: local
 
-Local.MyCls.document '<+Local.MyCls.p{テスト}>
+
+Local.MyCls.document '<
+  +Local.MyCls.p{テスト}
+  +Local.MyCls.p{\Local.MyCls.url(`https://github.com/gfngfn/SATySFi/blob/dev-0-1-0/src/frontend/parser.mly#L384`);}
+  +Local.MyCls.p{\Local.MyCls.href(`https://github.com/gfngfn/SATySFi/blob/dev-0-1-0/src/frontend/parser.mly#L384`){SATySFi v0.1.0のparser}}
+>
 
 

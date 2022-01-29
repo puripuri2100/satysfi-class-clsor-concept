@@ -5,11 +5,12 @@
 
 
 
-module Clsor% :> sig
-
-%  type config
+module Clsor %:> sig
+%
+%  type config :: o
 %  val default : unit -> config
-%  val font-size : length -> config -> config
+%  val set-font-size-normal : length -> config -> config
+%  val set-link-format : (inline-text -> inline-text) -> config -> config
 %
 %
 %end
@@ -17,19 +18,28 @@ module Clsor% :> sig
 
   type config =
     (|
-      font-size : length,
+      font-size-normal : length,
+      link-format : inline-text -> inline-text,
     |)
 
   val default () =
     (|
-      font-size = 12pt,
+      font-size-normal = 12pt,
+      link-format = fun it -> it,
     |)
 
-  val font-size size config =
+  val set-font-size-normal size (config:config) =
     (|
       config
       with
-      font-size = size
+      font-size-normal = size
+    |)
+
+  val set-link-format f (config:config) =
+    (|
+      config
+      with
+      link-format = f
     |)
 
 
@@ -54,7 +64,7 @@ module Clsor% :> sig
 
     val make-ctx width =
       get-initial-context width (command \Math.math)
-        |> set-font-size config-data#font-size
+        |> set-font-size config-data#font-size-normal
         |> set-dominant-wide-script Kana
         |> set-language Kana Japanese
         |> set-language HanIdeographic Japanese
@@ -93,6 +103,23 @@ module Clsor% :> sig
     val block ctx +p it =
       let ib = read-inline ctx it in
       line-break true true ctx (ib ++ inline-fil)
+
+    val inline ctx \non-hyph str =
+      let s-lst = string-explode str in
+      let f i =
+        let char = string-unexplode [i] in
+        let ib = char |> embed-string |> read-inline ctx in
+        ib
+      in
+      s-lst
+      |> List.map f
+      |> List.fold-left (++) inline-nil
+
+    val inline \href url text =
+      config-data#link-format {\Annot.href(url)(text);}
+
+    val inline \url url =
+      config-data#link-format {\Annot.href(url){\non-hyph(url);}}
 
   end
 

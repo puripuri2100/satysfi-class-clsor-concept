@@ -1,12 +1,21 @@
+@require: color
 @import: ../src/clsor
+
 
 module Local = struct
 
-  module MyClsSettings = struct
-    val config =  Clsor.default ()
-                  |> Clsor.font-size 20pt
+  val inline ctx \textcolor c it =
+    let ctx = set-text-color c ctx in
+    read-inline ctx it
+
+  module MyCls1Settings = struct
+    val config = Clsor.default ()
+                  |> Clsor.set-font-size-normal 10pt
+                  |> Clsor.set-link-format (fun it -> {\textcolor(Color.blue)(it);})
   end
 
-  module MyCls = Clsor.Make MyClsSettings
+  module MyCls1 = Clsor.Make MyCls1Settings
+
+  module MyCls = MyCls1
 
 end
