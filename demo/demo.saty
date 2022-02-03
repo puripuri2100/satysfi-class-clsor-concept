@@ -3,9 +3,39 @@
 
 
 Local.MyCls.document '<
-  +Local.MyCls.p{テスト}
-  +Local.MyCls.p{\Local.MyCls.url(`https://github.com/gfngfn/SATySFi/blob/dev-0-1-0/src/frontend/parser.mly#L384`);}
-  +Local.MyCls.p{\Local.MyCls.href(`https://github.com/gfngfn/SATySFi/blob/dev-0-1-0/src/frontend/parser.mly#L384`){SATySFi v0.1.0のparser}}
+  +Local.MyCls.section {普通の文章} <
+    +Local.MyCls.p{テストtest}
+    +Local.MyCls.p{設定で与えたフォントサイズになっていることわかります。}
+  >
+  +Local.MyCls.section {普通の文章} <
+    +Local.MyCls.p{ハイパーリンクのデザインを指定すると、urlコマンドのデザインとhrefコマンドのデザインが同時に変化します。}
+    +Local.MyCls.p{\Local.MyCls.url(`https://github.com/gfngfn/SATySFi/blob/dev-0-1-0/src/frontend/parser.mly#L384`);}
+    +Local.MyCls.p{\Local.MyCls.href(`https://github.com/gfngfn/SATySFi/blob/dev-0-1-0/src/frontend/parser.mly#L384`){SATySFi v0.1.0のparser}}
+  >
+  +Local.MyCls.section {節の切り替え 1} <
+    +Local.MyCls.section {節の切り替え 1-1} <>
+    +Local.MyCls.section {節の切り替え 1-2} <
+      +Local.MyCls.section {節の切り替え 1-2-1} <>
+      +Local.MyCls.section {節の切り替え 1-2-2} <
+        +Local.MyCls.section {節の切り替え 1-2-2-1} <>
+        +Local.MyCls.section {節の切り替え 1-2-2-2} <>
+        +Local.MyCls.section {節の切り替え 1-2-2-3} <
+          +Local.MyCls.section {節の切り替え 1-2-2-3-1} <
+            +Local.MyCls.section {節の切り替え 1-2-2-3-1-1} <>
+            +Local.MyCls.section {節の切り替え 1-2-2-3-1-2} <>
+          >
+          +Local.MyCls.section {節の切り替え 1-2-2-3-2} <>
+        >
+      >
+      +Local.MyCls.section {節の切り替え 1-2-3} <>
+    >
+    +Local.MyCls.section {節の切り替え 1-3} <>
+    +Local.MyCls.section {節の切り替え 1-4} <
+      +Local.MyCls.section {節の切り替え 1-4-1} <>
+      +Local.MyCls.section {節の切り替え 1-4-2} <>
+    >
+  +Local.MyCls.p{というように、sectionコマンドの入れ子のみで節構造を作ることができます。これも設定によって表示を変更することができます。デフォルトでは節の入れ子が3つ以上になるとフォントサイズが一定になり、それ以上の構造に対しては徐々にフォントサイズが大きくなるようになっています。}
+  >
 >
 
 

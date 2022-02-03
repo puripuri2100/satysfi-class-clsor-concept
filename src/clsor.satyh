@@ -16,16 +16,55 @@ module Clsor %:> sig
 %end
 = struct
 
+
+
+  val set-cjk-font font-name ctx =
+    ctx |> set-font HanIdeographic font-name
+        |> set-font Kana font-name
+
+  val set-latin-font font-name ctx =
+    ctx |> set-font Latin font-name
+
+
+
   type config =
     (|
       font-size-normal : length,
       link-format : inline-text -> inline-text,
+      section-title-format : context -> list int -> inline-text -> inline-boxes,
     |)
 
   val default () =
+    let font-size-normal = 12pt in
     (|
-      font-size-normal = 12pt,
+      font-size-normal = font-size-normal,
       link-format = fun it -> it,
+      section-title-format = fun ctx num-lst title -> (
+        let font-size =
+          match num-lst with
+            | [] -> abort-with-message `err`
+            | [_] -> font-size-normal *' 1.7
+            | _::_::[] -> font-size-normal *' 1.4
+            | _ -> font-size-normal *' 1.1
+          end
+        in
+        let ctx = ctx |> set-font-size font-size
+                      |> set-cjk-font (`ipaexg`, 0.88, 0.0)
+                      |> set-latin-font (`lmsans`, 1.0, 0.0)
+        in
+        let join lst =
+          List.fold-lefti (fun i s n ->
+            if i <= 0 then
+              arabic n
+            else
+              s ^ `. `# ^ arabic n
+          ) ` ` lst
+        in
+        let num-str = join num-lst in
+        let num-ib = read-inline ctx (embed-string num-str) in
+        let title-ib = read-inline ctx title in
+        num-ib ++ inline-skip font-size ++ title-ib
+      )
     |)
 
   val set-font-size-normal size (config:config) =
@@ -42,6 +81,12 @@ module Clsor %:> sig
       link-format = f
     |)
 
+  val set-section-title-format f (config:config) =
+    (|
+      config
+      with
+      section-title-format = f
+    |)
 
   signature S = sig
     val config : config
@@ -100,9 +145,32 @@ module Clsor %:> sig
       let bb = read-block ctx bt in
         page-break page pagecontf pagepartsf bb
 
+    val indent ctx =
+      let font-size = get-font-size ctx in
+      inline-skip font-size
+
+
     val block ctx +p it =
       let ib = read-inline ctx it in
-      line-break true true ctx (ib ++ inline-fil)
+      line-break true true ctx ((indent ctx) ++ ib ++ inline-fil)
+
+    val mutable sec-num-lst <- []
+
+    val mutable sec-num <- 0
+
+    val block ctx +section title inner =
+      let () = sec-num <- !sec-num + 1 in
+      let old-sec-num-lst = !sec-num-lst in
+      let () = sec-num-lst <- !sec-num::!sec-num-lst in
+      let old-sec-num = !sec-num in
+      let title-ib = config-data#section-title-format ctx (List.reverse !sec-num-lst) title in
+      let title-bb = line-break true false ctx (title-ib ++ inline-fil) in
+      let () = sec-num <- 0 in
+      let bb = read-block ctx inner in
+      let () = sec-num-lst <- old-sec-num-lst in
+      let () = sec-num <- old-sec-num in
+      title-bb +++ bb
+
 
     val inline ctx \non-hyph str =
       let s-lst = string-explode str in
