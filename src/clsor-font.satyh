@@ -1,0 +1,62 @@
+module ClsorFont :> sig
+
+  type t :: o
+
+  val default : t
+
+  val get-cjk-mincho   : t -> (string * float * float)
+  val get-cjk-gothic   : t -> (string * float * float)
+  val get-latin-roman  : t -> (string * float * float)
+  val get-latin-sans   : t -> (string * float * float)
+  val get-latin-bold   : t -> (string * float * float)
+  val get-latin-italic : t -> (string * float * float)
+
+  val set-cjk-mincho   : (string * float * float) -> t -> t
+  val set-cjk-gothic   : (string * float * float) -> t -> t
+  val set-latin-roman  : (string * float * float) -> t -> t
+  val set-latin-sans   : (string * float * float) -> t -> t
+  val set-latin-bold   : (string * float * float) -> t -> t
+  val set-latin-italic : (string * float * float) -> t -> t
+
+end = struct
+
+
+  type t =
+    (|
+      cjk-mincho   : string * float * float,
+      cjk-gothic   : string * float * float,
+      latin-roman  : string * float * float,
+      latin-sans   : string * float * float,
+      latin-bold   : string * float * float,
+      latin-italic : string * float * float,
+    |)
+
+
+  val default =
+    (|
+      cjk-mincho   = (`ipaexm`, 0.88, 0.0),
+      cjk-gothic   = (`ipaexg`, 0.88, 0.0),
+      latin-roman  = (`Junicode`, 1.0, 0.0),
+      latin-sans   = (`lmsans`, 1.0, 0.0),
+      latin-bold   = (`Junicode-b`, 1.0, 0.0),
+      latin-italic = (`Junicode-it`, 1.0, 0.0),
+    |)
+
+
+  val get-cjk-mincho   (t : t) = t#cjk-mincho
+  val get-cjk-gothic   (t : t) = t#cjk-gothic
+  val get-latin-roman  (t : t) = t#latin-roman
+  val get-latin-sans   (t : t) = t#latin-sans
+  val get-latin-bold   (t : t) = t#latin-bold
+  val get-latin-italic (t : t) = t#latin-italic
+
+
+
+  val set-cjk-mincho   (font : string * float * float) (t : t) = (|t with cjk-mincho   = font|)
+  val set-cjk-gothic   (font : string * float * float) (t : t) = (|t with cjk-mincho   = font|)
+  val set-latin-roman  (font : string * float * float) (t : t) = (|t with latin-roman  = font|)
+  val set-latin-sans   (font : string * float * float) (t : t) = (|t with latin-sans   = font|)
+  val set-latin-bold   (font : string * float * float) (t : t) = (|t with latin-bold   = font|)
+  val set-latin-italic (font : string * float * float) (t : t) = (|t with latin-italic = font|)
+
+end

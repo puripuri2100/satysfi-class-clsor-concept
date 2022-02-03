@@ -3,6 +3,8 @@
 @require: list
 @require: pervasives
 
+@import: clsor-font
+
 
 
 module Clsor %:> sig
@@ -31,7 +33,7 @@ module Clsor %:> sig
     (|
       font-size-normal : length,
       link-format : inline-text -> inline-text,
-      section-title-format : context -> list int -> inline-text -> inline-boxes,
+      section-title-format : context -> ClsorFont.t -> list int -> inline-text -> inline-boxes,
     |)
 
   val default () =
@@ -39,7 +41,7 @@ module Clsor %:> sig
     (|
       font-size-normal = font-size-normal,
       link-format = fun it -> it,
-      section-title-format = fun ctx num-lst title -> (
+      section-title-format = fun ctx font-data num-lst title -> (
         let font-size =
           match num-lst with
             | [] -> abort-with-message `err`
@@ -49,8 +51,8 @@ module Clsor %:> sig
           end
         in
         let ctx = ctx |> set-font-size font-size
-                      |> set-cjk-font (`ipaexg`, 0.88, 0.0)
-                      |> set-latin-font (`lmsans`, 1.0, 0.0)
+                      |> set-cjk-font (ClsorFont.get-cjk-gothic font-data)
+                      |> set-latin-font (ClsorFont.get-latin-sans font-data)
         in
         let join lst =
           List.fold-lefti (fun i s n ->
@@ -106,6 +108,8 @@ module Clsor %:> sig
     val left-space = 25mm
     val right-space = 25mm
     val text-width = page-width -' left-space -' right-space
+
+    val font-data = ClsorFont.default
 
     val make-ctx width =
       get-initial-context width (command \Math.math)
@@ -163,7 +167,9 @@ module Clsor %:> sig
       let old-sec-num-lst = !sec-num-lst in
       let () = sec-num-lst <- !sec-num::!sec-num-lst in
       let old-sec-num = !sec-num in
-      let title-ib = config-data#section-title-format ctx (List.reverse !sec-num-lst) title in
+      let title-ib =
+        config-data#section-title-format ctx font-data (List.reverse !sec-num-lst) title
+      in
       let title-bb = line-break true false ctx (title-ib ++ inline-fil) in
       let () = sec-num <- 0 in
       let bb = read-block ctx inner in
