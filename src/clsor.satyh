@@ -14,6 +14,12 @@ module Clsor :> sig
   val set-font-size-normal : length -> config -> config
   val set-link-format : (inline-text -> inline-text) -> config -> config
   val set-section-title-format : (context -> ClsorFont.t -> list int -> inline-text -> inline-boxes) -> config -> config
+  val set-cjk-mincho : (string * float * float) -> config -> config
+  val set-cjk-gothic : (string * float * float) -> config -> config
+  val set-latin-roman : (string * float * float) -> config -> config
+  val set-latin-sans : (string * float * float) -> config -> config
+  val set-latin-bold : (string * float * float) -> config -> config
+  val set-latin-italic : (string * float * float) -> config -> config
 
 
   signature DocumentConfig = sig
@@ -51,6 +57,7 @@ end
       font-size-normal : length,
       link-format : inline-text -> inline-text,
       section-title-format : context -> ClsorFont.t -> list int -> inline-text -> inline-boxes,
+      font-data : ClsorFont.t,
     |)
 
   val default () =
@@ -83,7 +90,8 @@ end
         let num-ib = read-inline ctx (embed-string num-str) in
         let title-ib = read-inline ctx title in
         num-ib ++ inline-skip font-size ++ title-ib
-      )
+      ),
+      font-data = ClsorFont.default,
     |)
 
   val set-font-size-normal size (config:config) =
@@ -107,6 +115,47 @@ end
       section-title-format = f
     |)
 
+  val set-cjk-mincho font (config:config) =
+    (|
+      config
+      with
+      font-data = ClsorFont.set-cjk-mincho font config#font-data
+    |)
+
+  val set-cjk-gothic font (config:config) =
+    (|
+      config
+      with
+      font-data = ClsorFont.set-cjk-gothic font config#font-data
+    |)
+
+  val set-latin-roman font (config:config) =
+    (|
+      config
+      with
+      font-data = ClsorFont.set-latin-roman font config#font-data
+    |)
+
+  val set-latin-sans font (config:config) =
+    (|
+      config
+      with
+      font-data = ClsorFont.set-latin-sans font config#font-data
+    |)
+
+  val set-latin-bold font (config:config) =
+    (|
+      config
+      with
+      font-data = ClsorFont.set-latin-bold font config#font-data
+    |)
+
+  val set-latin-italic font (config:config) =
+    (|
+      config
+      with
+      font-data = ClsorFont.set-latin-italic font config#font-data
+    |)
 
 
   signature DocumentConfig = sig
@@ -126,7 +175,7 @@ end
     val right-space = 25mm
     val text-width = page-width -' left-space -' right-space
 
-    val font-data = ClsorFont.default
+    val font-data = config-data#font-data
 
     val make-ctx width =
       get-initial-context width (command \Math.math)
@@ -136,6 +185,8 @@ end
         |> set-language HanIdeographic Japanese
         |> set-dominant-narrow-script Latin
         |> set-language Latin English
+        |> set-cjk-font (ClsorFont.get-cjk-mincho font-data)
+        |> set-latin-font (ClsorFont.get-latin-roman font-data)
 
 
     val document bt =
