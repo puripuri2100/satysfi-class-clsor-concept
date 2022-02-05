@@ -7,15 +7,32 @@
 
 
 
-module Clsor %:> sig
-%
-%  type config :: o
-%  val default : unit -> config
-%  val set-font-size-normal : length -> config -> config
-%  val set-link-format : (inline-text -> inline-text) -> config -> config
-%
-%
-%end
+module Clsor :> sig
+
+  type config :: o
+  val default : unit -> config
+  val set-font-size-normal : length -> config -> config
+  val set-link-format : (inline-text -> inline-text) -> config -> config
+  val set-section-title-format : (context -> ClsorFont.t -> list int -> inline-text -> inline-boxes) -> config -> config
+
+
+  signature DocumentConfig = sig
+    val config : config
+  end
+
+  module Make : (
+    DocumentConfig : sig
+      val config : config
+    end 
+  ) -> sig
+    val document : block-text -> document
+    val +p : block [inline-text]
+    val +section : block [inline-text, block-text]
+    val \href : inline [string, inline-text]
+    val \url : inline [string]
+  end
+
+end
 = struct
 
 
@@ -90,16 +107,16 @@ module Clsor %:> sig
       section-title-format = f
     |)
 
-  signature S = sig
+
+
+  signature DocumentConfig = sig
     val config : config
   end
 
 
+  module Make = fun(Config : DocumentConfig) -> struct
 
-
-  module Make = fun(X : S) -> struct
-
-    val config-data = X.config
+    val config-data = Config.config
 
     val page-width = 210mm
     val page-height = 297mm
